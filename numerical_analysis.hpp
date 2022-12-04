@@ -2,11 +2,14 @@
 #define NUMERICAL_ANALYSIS
 
 #define CHECKBOUNDS
+#define CHECKMATSHAPE
 
 
 #include <iostream>
 #include <complex>
 #include <cmath>
+
+using std::abs;
 
 /* Error and exception */
 #define thorw(message) \

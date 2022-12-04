@@ -30,7 +30,7 @@ public:
 
     /* Manipulating the matrix */
     void resize(int newn, int newm);                // Resize the matrix
-    void resize(int newn, int newm, const T &a);    // Resize and assign 'a'
+    void assign(int newn, int newm, const T &a);    // Resize and assign 'a'
 
 
     ~matrix();
@@ -42,7 +42,7 @@ template<class T>
 inline T* matrix<T>::operator[](const int i)
 {
     // Checks wheter index is in bounds
-#ifndef CHECKBOUNDS
+#ifdef CHECKBOUNDS
     if (i < 0 || i >= nn)
     {
         thorw("matrix row index out of bounds");
@@ -56,7 +56,7 @@ template<class T>
 inline  const T* matrix<T>::operator[](const int i) const
 {
     // Checks wheter index is in bounds
-#ifndef CHECKBOUNDS
+#ifdef CHECKBOUNDS
     if (i < 0 || i >= nn)
     {
         thorw("matrix row index out of bounds");
@@ -82,7 +82,6 @@ inline int matrix<T>::ncols(void)
 // Typedefs to make the code simpler:
 typedef matrix<char>                    MatChar;
 typedef matrix<unsigned char>           MatUchar;
-
 typedef matrix<int>                     MatInt;
 typedef matrix<unsigned int>            MatUInt;
 typedef matrix<long int>                MatLInt;
