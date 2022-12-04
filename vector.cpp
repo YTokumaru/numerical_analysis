@@ -2,87 +2,103 @@
 
 /* Creating vector */
 template <class T>
-vector<T>::vector(): nn(0), v(nullptr) {}
+vector<T>::vector(): nrow(0), elems(nullptr) {}
 
 template <class T>
-vector<T>::vector(int n): nn(n), v(n>0? new T[n]: nullptr) {}
+vector<T>::vector(int n): nrow(n), elems(n>0? new T[n]: nullptr) {}
 
 template <class T>
-vector<T>::vector(int n, const T &a): nn(n), v(n>0? new T[n]: nullptr)
+vector<T>::vector(int n, const T &a): nrow(n), elems(n>0? new T[n]: nullptr)
 {
-    for (int i = 0; i < nn; i++)
+    for (int i = 0; i < nrow; i++)
     {
-        v[i] = a;
+        elems[i] = a;
     }
 }
 
 template <class T>
-vector<T>::vector(int n, const T *a): nn(n), v(n>0? new T[n]: nullptr)
+vector<T>::vector(int n, const T *a): nrow(n), elems(n>0? new T[n]: nullptr)
 {
-    for (int i = 0; i < nn; i++)
+    for (int i = 0; i < nrow; i++)
     {
-        v[i] = *a++;
+        elems[i] = *a++;
     }
 }
 
 template <class T>
-vector<T>::vector(const vector<T> &othervector): nn(othervector.nn), v(n>0? new T[n]: nullptr)
+vector<T>::vector(const vector<T> &othervector): nrow(othervector.nrow), elems(nrow>0? new T[nrow]: nullptr)
 {
-    for (int i = 0; i < nn; i++)
+    for (int i = 0; i < nrow; i++)
     {
-        v[i] = othervector[i];
+        elems[i] = othervector[i];
     }
 }
 
 template <class T>
-vector<T> & vector<T>::operator=(const vector<T> &othercevtor)
+vector<T> & vector<T>::operator=(const vector<T> &othervector)
 {
-    if (this != &ohtervector)
+    if (this != &othervector)
     {
-        if (nn != othervector.nn)
+        if (nrow != othervector.nrow)
         {
-            if (nn != othercevtor)
+            if (nrow != othervector.nrow)
             {
-                if(v != nullptr) delete[] (v);
-                nn = othercevtor.nn;
-                v = nn>0? new T[n] : nullptr;
+                if(elems != nullptr) delete[] (elems);
+                nrow = othervector.nrow;
+                elems = nrow>0? new T[nrow] : nullptr;
             }
-            for (int i = 0; i < nn; i++)
+            for (int i = 0; i < nrow; i++)
             {
-                v[i] = othercevtor[i];
+                elems[i] = othervector[i];
             }
         }
     }
-    return *this
+    return *this;
 }
 
 /* Manipulating the vector */
 template <class T>
 void vector<T>::resize(int newn)
 {
-	if (newn != nn) {
-		if (v != nullptr) delete[] (v);
-		nn = newn;
-		v = nn > 0 ? new T[nn] : NULL;
+	if (newn != nrow) {
+		if (elems != nullptr) delete[] (elems);
+		nrow = newn;
+		elems = nrow > 0 ? new T[nrow] : NULL;
 	}
 }
 
 template <class T>
 void vector<T>::assign(int newn, const T& a)
 {
-	if (newn != nn) {
-		if (v != nullptr) delete[] (v);
-		nn = newn;
-		v = nn > 0 ? new T[nn] : nullptr;
+	if (newn != nrow) {
+		if (elems != nullptr) delete[] (elems);
+		nrow = newn;
+		elems = nrow > 0 ? new T[nrow] : nullptr;
 	}
-	for (int i = 0; i < nn; i++) v[i] = a;
+	for (int i = 0; i < nrow; i++) elems[i] = a;
+}
+
+/* Information about the vector */
+template <class T>
+int vector<T>::find(const T &a) const
+{
+    /* Finds the first occurence of 'a' in the vector and return its index 
+     * When no occurence is found, it will return -1*/
+    for (int i = 0; i < nrow; i++)
+    {
+        if (elems[i] == a)
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 
 /* Destructor */
 template <class T>
 vector<T>::~vector()
 {
-	if (v != nullptr) delete[] (v);
+	if (elems != nullptr) delete[] (elems);
 }
 
 

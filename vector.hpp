@@ -7,8 +7,8 @@ template<class T>
 class vector
 {
 private:
-    int nn;
-    T *v;
+    int nrow;
+    T *elems;
 public:
     /* Creating vector */
     vector();                                           // Default constructor
@@ -20,11 +20,12 @@ public:
 
     /* Adressing elements */
     inline T & operator[](const int i);                 // Return element number i
-    inline const T & operator[](const int i) const;         // const version
+    inline const T & operator[](const int i) const;         // const version. Called when vector is declared const
 
     /* Information about the vector */
     typedef T value_type;                               // Make T available
     inline int size(void) const;                        // The size of vector
+    int find(const T &a) const;                       // Find the first occurence of 'a' in the vector and return its index
 
     /* Manipulating the vector */
     void resize(int newn);                              // resize to size n
@@ -39,24 +40,24 @@ template <class T>
 inline T & vector<T>::operator[](const int i)
 {
 #ifdef CHECKBOUNDS
-    if (i < 0 || i >= nn)
+    if (i < 0 || i >= nrow)
     {
         throw("Index out of bounds!");
     }
 #endif // CHECKBOUNDS
-    return v[i];
+    return elems[i];
 }
 
 template <class T>
 inline const T & vector<T>::operator[](const int i) const
 {
 #ifdef CHECKBOUNDS
-    if (i < 0 || i >= nn)
+    if (i < 0 || i >= nrow)
     {
         throw("Index out of bounds!");
     }
 #endif // CHECKBOUNDS
-    return v[i];
+    return elems[i];
 }
 
 
@@ -64,7 +65,7 @@ inline const T & vector<T>::operator[](const int i) const
 template <class T>
 inline int vector<T>::size(void) const
 {
-    return nn;
+    return nrow;
 }
 
 

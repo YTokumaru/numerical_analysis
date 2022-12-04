@@ -3,6 +3,7 @@
 
 #include "numerical_analysis.hpp"
 #include "matrix.hpp"
+#include "vector.hpp"
 
 namespace linalg
 {

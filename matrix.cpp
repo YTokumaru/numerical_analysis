@@ -2,45 +2,45 @@
 
 /* Initializing the matrix */
 template <class T>
-matrix<T>::matrix(): nn(0), mm(0), v(nullptr) {}
+matrix<T>::matrix(): nrow(0), ncol(0), elems(nullptr) {}
 
 template <class T>
-matrix<T>::matrix(int n, int m): nn(n), mm(m), v(n>0? new T*[n]: nullptr)
+matrix<T>::matrix(int n, int m): nrow(n), ncol(m), elems(n>0? new T*[n]: nullptr)
 {
     int i, nelm = n*m;
-    if (v != nullptr) v[0] = nelm>0? new T[nelm] : nullptr;
-    for (i = 1; i < n; i++) v[i] = v[i-1] + m;
+    if (elems != nullptr) elems[0] = nelm>0? new T[nelm] : nullptr;
+    for (i = 1; i < n; i++) elems[i] = elems[i-1] + m;
 }
 
 template <class T>
-matrix<T>::matrix(int n, int m, const T &a): nn(n), mm(m), v(n>0? new T*[n]: nullptr)
+matrix<T>::matrix(int n, int m, const T &a): nrow(n), ncol(m), elems(n>0? new T*[n]: nullptr)
 {
     int i, j, nelm = n*m;
-    if (v != nullptr) v[0] = nelm>0? new T[nelm] : nullptr;
-    for (i = 1; i < n; i++) v[i] = v[i-1] + m;
+    if (elems != nullptr) elems[0] = nelm>0? new T[nelm] : nullptr;
+    for (i = 1; i < n; i++) elems[i] = elems[i-1] + m;
 
-    for (i = 0; i < n; i++) for (j = 0; j < m; j++) v[i][j] = a;
+    for (i = 0; i < n; i++) for (j = 0; j < m; j++) elems[i][j] = a;
 }
 
 template <class T>
-matrix<T>::matrix(int n, int m, const T *a): nn(n), mm(m), v(n>0? new T*[n]: nullptr)
+matrix<T>::matrix(int n, int m, const T *a): nrow(n), ncol(m), elems(n>0? new T*[n]: nullptr)
 {
     int i, j, nelm = n*m;
-    if (v != nullptr) v[0] = nelm>0? new T[nelm] : nullptr;
-    for (i = 1; i < n; i++) v[i] = v[i-1] + m;
+    if (elems != nullptr) elems[0] = nelm>0? new T[nelm] : nullptr;
+    for (i = 1; i < n; i++) elems[i] = elems[i-1] + m;
 
     // Make sure that the size of a is same or longer than the matrix
-    for (int i = 0; i < n; i++) for (j = 0; j < m; j++) v[i][j] = *a++;
+    for (int i = 0; i < n; i++) for (j = 0; j < m; j++) elems[i][j] = *a++;
 }
 
 template <class T>
-matrix<T>::matrix(const matrix<T> &othermatrix): nn(othermatrix.nn), mm(othermatrix.mm), v(nn>0? new T*[nn]: nullptr)
+matrix<T>::matrix(const matrix<T> &othermatrix): nrow(othermatrix.nrow), ncol(othermatrix.ncol), elems(nrow>0? new T*[nrow]: nullptr)
 {
-    int i, j, nelm = nn*mm;
-    if (v != nullptr) v[0] = nelm>0? new T[nelm] : nullptr;
-    for (i = 1; i < nn; i++) v[i] = v[i-1] + mm;
+    int i, j, nelm = nrow*ncol;
+    if (elems != nullptr) elems[0] = nelm>0? new T[nelm] : nullptr;
+    for (i = 1; i < nrow; i++) elems[i] = elems[i-1] + ncol;
 
-    for (i = 0; i < nn; i++) for (j = 0; j < mm; j++) v[i][j] = othermatrix[i][j];
+    for (i = 0; i < nrow; i++) for (j = 0; j < ncol; j++) elems[i][j] = othermatrix[i][j];
 }
 
 template <class T>
@@ -49,24 +49,24 @@ matrix<T> & matrix<T>::operator=(const matrix<T> &othermatrix)
     if (this != &othermatrix)
     {
         int i, j, nelm;
-        if (nn != othermatrix.nn || mm != othermatrix.mm)
+        if (nrow != othermatrix.nrow || ncol != othermatrix.ncol)
         {
             // If the size is not the same, free all data and reallocate them
-            if(v != nullptr)
+            if(elems != nullptr)
             {
-                delete[] (v[0]);
-                delete[] (v);
+                delete[] (elems[0]);
+                delete[] (elems);
             }
-            nn = othermatrix.nn;
-            mm = othermatrix.mm;
-            v = nn>0? new T*[nn]: nullptr;
-            nelm = nn*mm;
+            nrow = othermatrix.nrow;
+            ncol = othermatrix.ncol;
+            elems = nrow>0? new T*[nrow]: nullptr;
+            nelm = nrow*ncol;
 
-            if (v != nullptr) v[0] = nelm>0? new T[nelm] : nullptr;
-            for (i = 1; i < nn; i++) v[i] = v[i-1] + mm;
+            if (elems != nullptr) elems[0] = nelm>0? new T[nelm] : nullptr;
+            for (i = 1; i < nrow; i++) elems[i] = elems[i-1] + ncol;
         }
         // copy the data
-        for (i = 0; i < nn; i++) for (j = 0; j < mm; j++) v[i][j] = othermatrix[i][j];
+        for (i = 0; i < nrow; i++) for (j = 0; j < ncol; j++) elems[i][j] = othermatrix[i][j];
     }
     return *this;
 }
@@ -76,17 +76,17 @@ template <class T>
 void matrix<T>::resize(int newn, int newm)
 {
 	int i,nel;
-	if (newn != nn || newm != mm) {
-		if (v != nullptr) {
-			delete[] (v[0]);
-			delete[] (v);
+	if (newn != nrow || newm != ncol) {
+		if (elems != nullptr) {
+			delete[] elems[0];
+			delete[] elems;
 		}
-		nn = newn;
-		mm = newm;
-		v = nn>0 ? new T*[nn] : nullptr;
-		nel = mm*nn;
-		if (v) v[0] = nel>0 ? new T[nel] : nullptr;
-		for (i=1; i< nn; i++) v[i] = v[i-1] + mm;
+		nrow = newn;
+		ncol = newm;
+		elems = nrow>0 ? new T*[nrow] : nullptr;
+		nel = ncol*nrow;
+		if (elems) elems[0] = nel>0 ? new T[nel] : nullptr;
+		for (i=1; i< nrow; i++) elems[i] = elems[i-1] + ncol;
 	}
 }
 
@@ -94,29 +94,29 @@ template <class T>
 void matrix<T>::assign(int newn, int newm, const T& a)
 {
 	int i,j,nel;
-	if (newn != nn || newm != mm) {
-		if (v != nullptr) {
-			delete[] (v[0]);
-			delete[] (v);
+	if (newn != nrow || newm != ncol) {
+		if (elems != nullptr) {
+			delete[] elems[0];
+			delete[] elems;
 		}
-		nn = newn;
-		mm = newm;
-		v = nn>0 ? new T*[nn] : nullptr;
-		nel = mm*nn;
-		if (v) v[0] = nel>0 ? new T[nel] : nullptr;
-		for (i=1; i< nn; i++) v[i] = v[i-1] + mm;
+		nrow = newn;
+		ncol = newm;
+		elems = nrow>0 ? new T*[nrow] : nullptr;
+		nel = ncol*nrow;
+		if (elems) elems[0] = nel>0 ? new T[nel] : nullptr;
+		for (i=1; i< nrow; i++) elems[i] = elems[i-1] + ncol;
 	}
-	for (i=0; i< nn; i++) for (j=0; j<mm; j++) v[i][j] = a;
+	for (i=0; i< nrow; i++) for (j=0; j<ncol; j++) elems[i][j] = a;
 }
 
 /* Destructor */
 template <class T>
 matrix<T>::~matrix()
 {
-    if (v != nullptr)
+    if (elems != nullptr)
     {
-        delete[] (v[0]);
-        delete[] (v);
+        delete[] (elems[0]);
+        delete[] (elems);
     }
 }
 

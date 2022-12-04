@@ -20,6 +20,13 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "tuple": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "system_error": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "limits": "cpp",
+        "ostream": "cpp",
+        "streambuf": "cpp",
+        "functional": "cpp"
     }
 }
