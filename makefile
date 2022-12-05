@@ -1,0 +1,18 @@
+.PHONY: all clean
+
+TARGET = test
+CXX = g++
+CPPFLAGS = 
+CXXFLAGS = -Wall -g
+
+SRC = gauss_elim.cpp matrix.cpp vector.cpp linalg.cpp
+OBJ = $(SRC:%.cpp=%.o)
+
+%.o: src/%.cpp
+	$(CXX) $(CXXFLAGS) -o build/$@ -c $<
+
+all: $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $(TARGET).out $(OBJ:%=build/%)
+
+clean:
+	rm build/*.o
