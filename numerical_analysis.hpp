@@ -12,16 +12,11 @@
 #include <assert.h>
 #include <iomanip>
 
+using std::swap;
+
 
 /* Macro-like inline functions */
-template<class T>
-inline void swap(T &a, T &b)
-{
-    T dummy;
-    dummy = a;
-    a = b;
-    b = dummy;
-}
+
 
 /* Base exception class to handle errors */
 class exception
