@@ -79,6 +79,31 @@ inline int matrix<T>::ncols(void) const
     return _ncol;
 }
 
+/* An override to define matrix out to stream */
+template <class T>
+std::ostream & operator<<(std::ostream &stream, const matrix<T> &mat)
+{  
+    stream << '{';
+
+    // outputting matrix to stram
+    for (int row = 0; row < mat.nrows(); row++)
+    {
+        if (row==0) {stream << "{";}
+        else {stream << " {";}
+
+
+        for (int col = 0; col < mat.ncols(); col++)
+        {
+            stream << std::setprecision(OUTPRECISION) << mat[row][col];
+
+            if (col != (mat.ncols()-1)) {stream << " ,";}
+        }
+        if (row != (mat.nrows()-1)) {stream << "},\n";}
+        else {stream << "}}\n";}
+    }
+    return stream;
+}
+
 // Typedefs to make the code simpler:
 typedef matrix<char>                    MatChar;
 typedef matrix<unsigned char>           MatUchar;

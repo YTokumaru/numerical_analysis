@@ -22,17 +22,9 @@ int main(int argc, char* argv[])
     B[1][0] = 20;
     B[2][0] = 13;
 
-    MatDouble C = linalg::solve::gaussJ(A,B);
+    MatDouble C = linalg::solve::gaussJ_backsub(A,B);
 
-    for (int i = 0; i < C.nrows(); i++)
-    {
-        for (int j = 0; j < C.ncols(); j++)
-        {
-            std::cout << std::setprecision(16) << C[i][j] << " ";
-        }
-        std::cout << "\n";
-    } 
-    
+    std::cout << C;
 
     return 0;
 }

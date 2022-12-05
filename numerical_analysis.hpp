@@ -14,6 +14,9 @@
 
 using std::swap;
 
+/* Global Constants */
+const unsigned int OUTPRECISION = 16;       // precision used to output matrix / vector values to stream
+
 
 /* Macro-like inline functions */
 

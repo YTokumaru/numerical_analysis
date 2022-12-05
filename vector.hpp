@@ -68,6 +68,24 @@ inline int vector<T>::size(void) const
     return _nrow;
 }
 
+/* An override to define vector out to stream */
+template <class T>  // TODO: test this function
+std::ostream & operator<<(std::ostream &stream, const vector<T> &vec)
+{  
+    stream << '{';
+
+    // outputting matrix to stram
+    for (int row = 0; row < vec.size(); row++)
+    {
+        stream << std::setprecision(OUTPRECISION) << vec[row];
+
+        if (row != (vec.size() - 1)) {stream << ",\n";}
+    }
+
+    stream << "}\n";
+    return stream;
+}
+
 
 // Typedefs to make the code simpler:
 typedef vector<char>                    VecChar;
