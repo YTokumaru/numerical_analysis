@@ -7,9 +7,9 @@ template<class T>
 class matrix
 {
 private:
-    int nrow;                                       // Number of rows
-    int ncol;                                       // Number of columns
-    T **elems;                                      // Pointer to the data
+    int _nrow;                                      // Number of rows
+    int _ncol;                                      // Number of columns
+    T **_elems;                                     // Pointer to the data
 public:
     /* Initializing the matrix */
     matrix();                                       // Default constructor
@@ -43,13 +43,13 @@ inline T* matrix<T>::operator[](const int i)
 {
     // Checks wheter index is in bounds
 #ifdef CHECKBOUNDS
-    if (i < 0 || i >= nrow)
+    if (i < 0 || i >= _nrow)
     {
         throw index_out_of_bounds("Invalid row number referenced.");
     }
 #endif
 
-    return elems[i];
+    return _elems[i];
 }
 
 template<class T>
@@ -57,26 +57,26 @@ inline  const T* matrix<T>::operator[](const int i) const
 {
     // Checks wheter index is in bounds
 #ifdef CHECKBOUNDS
-    if (i < 0 || i >= nrow)
+    if (i < 0 || i >= _nrow)
     {
         throw index_out_of_bounds("Invalid row number referenced.");
     }
 #endif
 
-    return elems[i];
+    return _elems[i];
 }
 
 /* Information about the matrix */
 template<class T>
 inline int matrix<T>::nrows(void) const
 {
-    return nrow;
+    return _nrow;
 }
 
 template<class T>
 inline int matrix<T>::ncols(void) const
 {
-    return ncol;
+    return _ncol;
 }
 
 // Typedefs to make the code simpler:

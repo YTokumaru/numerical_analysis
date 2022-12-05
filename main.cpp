@@ -5,6 +5,7 @@
 
 int main(int argc, char* argv[])
 {
+    
     MatDouble A(3,3);
     A[0][0] = 3;
     A[0][1] = 1;
@@ -27,10 +28,11 @@ int main(int argc, char* argv[])
     {
         for (int j = 0; j < C.ncols(); j++)
         {
-            std::cout << C[i][j] << " ";
+            std::cout << std::setprecision(16) << C[i][j] << " ";
         }
         std::cout << "\n";
     } 
+    
 
     return 0;
 }

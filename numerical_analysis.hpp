@@ -10,6 +10,7 @@
 #include <string.h>
 #include <cmath>
 #include <assert.h>
+#include <iomanip>
 
 
 /* Macro-like inline functions */

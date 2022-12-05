@@ -7,8 +7,8 @@ template<class T>
 class vector
 {
 private:
-    int nrow;
-    T *elems;
+    int _nrow;
+    T *_elems;
 public:
     /* Creating vector */
     vector();                                           // Default constructor
@@ -40,24 +40,24 @@ template <class T>
 inline T & vector<T>::operator[](const int i)
 {
 #ifdef CHECKBOUNDS
-    if (i < 0 || i >= nrow)
+    if (i < 0 || i >= _nrow)
     {
         throw("Index out of bounds!");
     }
 #endif // CHECKBOUNDS
-    return elems[i];
+    return _elems[i];
 }
 
 template <class T>
 inline const T & vector<T>::operator[](const int i) const
 {
 #ifdef CHECKBOUNDS
-    if (i < 0 || i >= nrow)
+    if (i < 0 || i >= _nrow)
     {
         throw("Index out of bounds!");
     }
 #endif // CHECKBOUNDS
-    return elems[i];
+    return _elems[i];
 }
 
 
@@ -65,7 +65,7 @@ inline const T & vector<T>::operator[](const int i) const
 template <class T>
 inline int vector<T>::size(void) const
 {
-    return nrow;
+    return _nrow;
 }
 
 

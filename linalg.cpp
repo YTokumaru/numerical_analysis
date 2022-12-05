@@ -42,27 +42,18 @@ MatDouble solve::gaussJ_backsub(MatDouble A, MatDouble B)
     
 #endif // CHECKMATSHAPE
 
-    // TODO
-
-    int n = A.ncols();              // Beyond this line, n is the number of columns (and rows)
-
-    VecInt track(n, n);           // Initialize the tracking vector with values n  
-    // This vector keeps track of which row was used as a pivot. (row and column number start at 0)
-    // When track[0] == 0, this means that the 0th row was used as a pivot to eliminate 0th column.
-    // When track[3] == 1, this means that the 3th row was used as a pivot to eliminate 1th column.
-    // When track[p] == q, this means that the pth row was used as a pivot to eliminate qth colums.
+    int n = A.ncols();              // Beyond this line, n is the number of columns for A (and rows for A and B)
 
     for (int delcol = 0; delcol < n; delcol++)
     {
         /* Step 1: Find a suitable pivot for eliminating column 'delcol'. If all values withn a column is 0, throw error: unsolvable */
-        // a loop for finding the largest element
+        // delcol is the column number of the column we are trying to eliminate.
+        // all elements below delcol-th row must be 0 after the operation
+        // a loop for finding the largest element below delcol th row
         double max = 0;                 // Variable storing the largest element found
-        int pivrow = n;               // Variable storing the row the largest element belong to
-        for (int i = 0; i < n; i++)
+        int pivrow = n;                 // Variable storing the row the largest element belong to
+        for (int i = delcol; i < n; i++)
         {
-            // skip rows that are already used as pivots
-            if (track[i] != n) {continue;}
-
             if (std::fabs(A[i][delcol]) > max)
             {
                 max = A[i][delcol];
@@ -71,66 +62,60 @@ MatDouble solve::gaussJ_backsub(MatDouble A, MatDouble B)
         }
         if (max == 0.0)
         {
-            throw unsolvable("While Gauss-Jordan eliminaton, encountered a column whose elements are all 0.");
+            throw unsolvable("While Gauss-Jordan eliminaton, encountered a column whose elements are all 0: A is a singular matrix");
         }
 
-        /* Step 2: Delete rows that are not already used as pivots */
-        track[pivrow] = delcol;         // Record the fact that row pivrow is going to be used to eliminate column delcol
-        for (int i = 0; i < n; i++)
+        // Swap the pivrow with delcol-th row
+        // Swap A
+        for (int j = 0; j < n; j++)
         {
-            // Eliminate rows that are not used as pivots
-            if (track[i] == n)
-            {
-                // Work out how much multiplicaion is required
-                double ratio = A[i][delcol]/A[pivrow][delcol];          // A[pivrow][delcol] can be computed outside the loop hence saving computing time
+            swap(A[pivrow][j], A[delcol][j]);
+        }
+        // Swap B
+        for (int j = 0; j < B.ncols(); j++)
+        {
+            swap(B[pivrow][j], B[delcol][j]);
+        }
+        
+        /* Step 2: Apply the same elementary row opertation to both A and B to eliminate elements of delcol below the delcol-th row*/
+        for (int row = delcol + 1; row < n; row++)
+        {
+            double ratio = A[row][delcol] / A[delcol][delcol];
 
-                for (int j = 0; j < n; j++)
-                {
-                    A[i][j] -= A[pivrow][j]*ratio;
-                }
-                // Do the same for the matrix on the right hand side
-                for (int k = 0; k < B.ncols(); k++)         // this loop is unnecessary when B has the same shape as A (i.e when calculating the inverse) 
-                {
-                    B[i][k] -= B[pivrow][k]*ratio;
-                }
+            // Apply row operation to A
+            for (int j = 0; j < n; j++)
+            {
+                A[row][j] -= A[delcol][j] * ratio;
+            }
+            // Apply row operation to B
+            for (int j = 0; j < B.ncols(); j++)
+            {
+                B[row][j] -= B[delcol][j] * ratio;
             }
         }
     }
-    
-    /* Step 3: Begin backsubstitution */
-    // now that A is reduced to a triangular matrix (though its rows are all mixed up), we can begin backsubstitution
+    /* Step 3: Backsubstitution */
+    // solve for the unkowns from the bottom up
 
-    for (int pivorder = n-1; pivorder >= 0; pivorder--)
+    for (int solverow = n-1; solverow >= 0; solverow--)
     {
-        // Get the pivot row numbers in the reverse order
-        int pivrow = track.find(pivorder);      // The row we want to solve for
-        assert(pivrow == pivrow);               // Pivrow should not be NaN at any point in this loop, but just to make sure
+        double coef = A[solverow][solverow];            // Coefficient of the unkown we want to solve for
 
-        double coef = A[pivrow][pivorder];      // Coeffivient of the unknown that we want to solve for
-        //Subtract constants
-        for (int col_num = n-1; col_num > pivorder; col_num--)
+        // From the unkowns we previously solved for, work out the constant value on the left hand side of the equation
+        // and subtract it from the right
+        for (int i = n-1; i > solverow; i--)        // Note that 'i' here can both mean row number and column number
         {
-            // TODO: Something is going wrong here
-            for (int checkrow = 0; checkrow < n; checkrow++)
+            for (int col = 0; col < B.ncols(); col++)
             {
-                if(track[checkrow] >= n)         // check if the row has already been solved
-                {
-                    for (int b_col_num = 0; b_col_num < B.ncols(); b_col_num++)
-                    {
-                        B[pivrow][b_col_num] -= A[pivrow][checkrow-n] * B[checkrow][b_col_num];   // Subtracting the known constants from previously earned results
-                    }
-                }
+                B[solverow][col] -= A[solverow][i] * B[i][col];
             }
-            
-        }
-        // Divide the row with the coefficient
-        for (int i = 0; i < B.ncols(); i++)
-        {
-            B[pivrow][i] = B[pivrow][i] / coef;
         }
 
-        track[pivrow] += n;      // Record that 'pivrow' has been solved   
+        // Divide solverow by coef to make B the solution
+        for (int col = 0; col < B.ncols(); col++)
+        {
+            B[solverow][col] /= coef;
+        }
     }
     return B;
-
 }
