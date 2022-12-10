@@ -39,24 +39,32 @@ public:
 template <class T>
 inline T & vector<T>::operator[](const int i)
 {
-#ifdef CHECKBOUNDS
-    if (i < 0 || i >= _nrow)
-    {
-        throw("Index out of bounds!");
-    }
-#endif // CHECKBOUNDS
+    #ifdef CHECKBOUNDS
+        if (i < 0 || i >= _nrow)
+        {
+            #ifdef PARALLEL
+                MPI_Abort(MPI_COMM_WORLD, INDEX_OUT_OF_BOUNDS);
+            #else
+                throw("Index out of bounds!");
+            #endif // PARALLEL
+        }
+    #endif // CHECKBOUNDS
     return _elems[i];
 }
 
 template <class T>
 inline const T & vector<T>::operator[](const int i) const
 {
-#ifdef CHECKBOUNDS
-    if (i < 0 || i >= _nrow)
-    {
-        throw("Index out of bounds!");
-    }
-#endif // CHECKBOUNDS
+    #ifdef CHECKBOUNDS
+        if (i < 0 || i >= _nrow)
+        {
+            #ifdef PARALLEL
+                MPI_Abort(MPI_COMM_WORLD, INDEX_OUT_OF_BOUNDS);
+            #else
+                throw("Index out of bounds!");
+            #endif // PARALLEL
+        }
+    #endif // CHECKBOUNDS
     return _elems[i];
 }
 

@@ -13,7 +13,11 @@ MatDouble solve::gaussJ(MatDouble A, MatDouble B)
 #ifdef CHECKMATSHAPE
     if (A.ncols() != A.nrows())
     {
+# ifdef PARALLEL
+        MPI_Abort(MPI_COMM_WORLD, UNEXPECTED_SHAPE);
+#else
         throw unexpected_shape("Expected a square matrix, but did not.");
+#endif // PARALLEL
     }
 #endif // CHECKMATSHAPE
 
@@ -98,13 +102,20 @@ MatDouble solve::gaussJ_backsub(MatDouble A, MatDouble B)
 #ifdef CHECKMATSHAPE
     if (A.ncols() != A.nrows())
     {
+#ifdef PARALLEL
+        MPI_Abort(MPI_COMM_WORLD, UNEXPECTED_SHAPE);
+#else
         throw unexpected_shape("Expected a square matrix, but did not.");
+#endif // PARALLEL
     }
     if (A.nrows() != B.nrows())
     {
+#ifdef PARALLEL
+        MPI_Abort(MPI_COMM_WORLD, UNEXPECTED_SHAPE);
+# else
         throw unexpected_shape("Expected A and B to have the same number of rows but they do not.");
+# endif // PARALLEL
     }
-    
 #endif // CHECKMATSHAPE
 
     int n = A.ncols();              // Beyond this line, n is the number of columns for A (and rows for A and B)
@@ -183,4 +194,23 @@ MatDouble solve::gaussJ_backsub(MatDouble A, MatDouble B)
         }
     }
     return B;
+}
+
+MatDouble inverse::gaussJ(MatDouble A)
+{
+#ifdef CHECKMATSHAPE
+    if (A.ncols() != A.nrows())
+    {
+        throw unexpected_shape("Expected a square matrix, but did not.");
+    }
+#endif // CHECKMATSHAPE
+
+    // Make the identity matrix
+    MatDouble identity(A.ncols(), A.nrows(), 0.0);
+    for (int i = 0; i < A.ncols(); i++)
+    {
+        identity[i][i] = 1.0;
+    }
+    
+    return solve::gaussJ_backsub(A,identity);
 }

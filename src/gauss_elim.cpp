@@ -29,6 +29,8 @@ int main(int argc, char* argv[])
     auto stop = std::chrono::high_resolution_clock::now();
 
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop-start);
+
+    
     std::cout << C;
     std::cout << "Elapsed time: " << duration.count() << " microseconds\n";
 

@@ -42,13 +42,16 @@ template<class T>
 inline T* matrix<T>::operator[](const int i)
 {
     // Checks wheter index is in bounds
-#ifdef CHECKBOUNDS
-    if (i < 0 || i >= _nrow)
-    {
-        throw index_out_of_bounds("Invalid row number referenced.");
-    }
-#endif
-
+    #ifdef CHECKBOUNDS
+        if (i < 0 || i >= _nrow)
+        {
+            #ifdef PARALLEL
+                MPI_Abort(MPI_COMM_WORLD, INDEX_OUT_OF_BOUNDS);
+            #else
+                throw index_out_of_bounds("Invalid row number referenced.");
+            #endif // PARALLEL
+        }
+    #endif // CHECKBOUNDS
     return _elems[i];
 }
 
@@ -56,12 +59,16 @@ template<class T>
 inline  const T* matrix<T>::operator[](const int i) const
 {
     // Checks wheter index is in bounds
-#ifdef CHECKBOUNDS
-    if (i < 0 || i >= _nrow)
-    {
-        throw index_out_of_bounds("Invalid row number referenced.");
-    }
-#endif
+    #ifdef CHECKBOUNDS
+        if (i < 0 || i >= _nrow)
+        {
+            #ifdef PARALLEL
+                MPI_Abort(MPI_COMM_WORLD, INDEX_OUT_OF_BOUNDS);
+            #else
+                throw index_out_of_bounds("Invalid row number referenced.");
+            #endif // PARALLEL
+        }
+    #endif
 
     return _elems[i];
 }

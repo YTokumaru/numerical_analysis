@@ -10,10 +10,10 @@ namespace linalg
     namespace solve
     {
         // Methods to solve linear equations
-
         MatDouble gaussJ(MatDouble a, MatDouble b);             // Gauss-Jordan elimination
 
         MatDouble gaussJ_backsub(MatDouble a, MatDouble b);     // Gauss-Jordan elimination with back-substitution
+
     }
 
     namespace inverse
