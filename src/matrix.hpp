@@ -4,12 +4,14 @@
 #include "numerical_analysis.hpp"
 
 template<class T>
+
 class matrix
 {
 private:
     int _nrow;                                      // Number of rows
     int _ncol;                                      // Number of columns
     T **_elems;                                     // Pointer to the data
+    
 public:
     /* Initializing the matrix */
     matrix();                                       // Default constructor
@@ -17,7 +19,11 @@ public:
     matrix(int n, int m, const T &a);               // Initialize the matrix to constant value of a
     matrix(int n, int m, const T *a);               // Initialize to a C-style array
     matrix(const matrix<T> &othermatrix);           // Copy constructor
-    matrix & operator=(const matrix &othermatrix);  // Assignment operator
+    matrix<T> & operator=(const matrix &othermatrix);// Assignment operator
+
+    template<class U>
+    matrix<T> & operator=(const matrix<U> &othermatrix);// Assignment operator override for other datatypes
+
 
     /* Adressing rows */
     inline T* operator[](const int i);              // Return pointer to i th row

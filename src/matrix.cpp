@@ -8,8 +8,14 @@ template <class T>
 matrix<T>::matrix(int n, int m): _nrow(n), _ncol(m), _elems(n>0? new T*[n]: nullptr)
 {
     int i, nelm = n*m;
-    if (_elems != nullptr) _elems[0] = nelm>0? new T[nelm] : nullptr;
-    for (i = 1; i < n; i++) _elems[i] = _elems[i-1] + m;
+    if (_elems != nullptr) 
+    {
+        _elems[0] = nelm>0? new T[nelm] : nullptr;
+    }
+    for (i = 1; i < n; i++)
+    {
+        _elems[i] = _elems[i-1] + m;
+    } 
 }
 
 template <class T>
@@ -68,6 +74,32 @@ matrix<T> & matrix<T>::operator=(const matrix<T> &othermatrix)
         // copy the data
         for (i = 0; i < _nrow; i++) for (j = 0; j < _ncol; j++) _elems[i][j] = othermatrix[i][j];
     }
+    return *this;
+}
+
+template <class T>
+template <class U>
+matrix<T> & matrix<T>::operator=(const matrix<U> &othermatrix)
+{
+    int i, j, nelm;
+    if (_nrow != othermatrix.nrows() || _ncol != othermatrix.ncols())
+    {
+        // If the size is not the same, free all data and reallocate them
+        if(_elems != nullptr)
+        {
+            delete[] (_elems[0]);
+            delete[] (_elems);
+        }
+        _nrow = othermatrix.nrows();
+        _ncol = othermatrix.ncols();
+        _elems = _nrow>0? new T*[_nrow]: nullptr;
+        nelm = _nrow*_ncol;
+        
+        if (_elems != nullptr) _elems[0] = nelm>0? new T[nelm] : nullptr;
+        for (i = 1; i < _nrow; i++) _elems[i] = _elems[i-1] + _ncol;
+    }
+    // copy the data with type converesion
+    for (i = 0; i < _nrow; i++) for (j = 0; j < _ncol; j++) _elems[i][j] = T(othermatrix[i][j]);
     return *this;
 }
 
@@ -131,3 +163,5 @@ template class matrix<unsigned long long int>;
 template class matrix<double>;
 template class matrix<long double>;
 template class matrix<std::complex<double>>;
+
+template MatDouble & MatDouble::operator=(const MatInt&);

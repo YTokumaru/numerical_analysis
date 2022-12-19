@@ -1,25 +1,69 @@
 #include "linalg.hpp"
 
-using namespace linalg;
 
+
+
+MatInt linalg::matmul(MatInt A, MatInt B)
+{
+    #ifdef CHECKSHAPE
+    if (A.ncols() != B.nrows())
+    {
+        throw unexpected_shape("Cannot multiply these matricies");
+    }
+    #endif // CHECKSHAPE
+
+
+    MatInt return_mat(A.nrows(), B.ncols());
+    for (int i = 0; i < return_mat.nrows(); i++)
+    {
+        for (int j = 0; j < return_mat.ncols(); j++)
+        {
+            return_mat[i][j] = 0;
+            for (int n = 0; n < A.ncols(); n++)
+            {
+                return_mat[i][j] += A[i][n] * B[n][j];
+            }
+        }
+    }
+    return return_mat;
+}
+
+#ifdef PARALLEL
 MatDouble solve::gaussJ(MatDouble A, MatDouble B)
-/* Implementation of Gauss-Jordan elimination
+/* An implementation of Gauss-Jordan Elimination in parallel
  * Applies the same elementary row operation to both A and B, until A becomes a identity matrix.
  * By then B will have become the solution vector (or a set of solution vectors).
  * 
  * Assumes that A is a square matrix
  */
 {
-#ifdef CHECKMATSHAPE
+#ifdef CHECKSHAPE
     if (A.ncols() != A.nrows())
     {
-# ifdef PARALLEL
         MPI_Abort(MPI_COMM_WORLD, UNEXPECTED_SHAPE);
-#else
-        throw unexpected_shape("Expected a square matrix, but did not.");
-#endif // PARALLEL
     }
-#endif // CHECKMATSHAPE
+    if (A.nrows() != B.nrows())
+    {
+        MPI_Abort(MPI_COMM_WORLD, UNEXPECTED_SHAPE);
+    }
+#endif //CHECKSHAPE
+}
+
+#else
+MatDouble linalg::solve::gaussJ(MatDouble A, MatDouble B)
+/* Implementation of Gauss-Jordan elimination in serial
+ * Applies the same elementary row operation to both A and B, until A becomes a identity matrix.
+ * By then B will have become the solution vector (or a set of solution vectors).
+ * 
+ * Assumes that A is a square matrix
+ */
+{
+#ifdef CHECKSHAPE
+    if (A.ncols() != A.nrows())
+    {
+        throw unexpected_shape("Expected a square matrix, but did not.");
+    }
+#endif // CHECKSHAPE
 
     int n = A.ncols();              // Beyond this line, n is the number of columns for A (and rows for A and B)
 
@@ -39,6 +83,7 @@ MatDouble solve::gaussJ(MatDouble A, MatDouble B)
                 pivrow = i;
             }
         }
+        // You usually do not want to check double == double but the following line is fine
         if (max == 0.0)
         {
             throw unsolvable("While Gauss-Jordan eliminaton, encountered a column whose elements are all 0: A is a singular matrix");
@@ -89,8 +134,9 @@ MatDouble solve::gaussJ(MatDouble A, MatDouble B)
     }
     return B;
 }
+#endif // PARALLEL
 
-MatDouble solve::gaussJ_backsub(MatDouble A, MatDouble B)
+MatDouble linalg::solve::gaussJ_backsub(MatDouble A, MatDouble B)
 /* Implementation of Gauss-Jordan elimination with back substitution
  * Applies same elemantary row operation to both A and B, until A becomes a triangular matrix.
  * Then the solution vector (matrix) is calculated from bottom up.
@@ -99,7 +145,7 @@ MatDouble solve::gaussJ_backsub(MatDouble A, MatDouble B)
  * Assumes that A is a square matrix.
  */
 {
-#ifdef CHECKMATSHAPE
+#ifdef CHECKSHAPE
     if (A.ncols() != A.nrows())
     {
 #ifdef PARALLEL
@@ -116,7 +162,7 @@ MatDouble solve::gaussJ_backsub(MatDouble A, MatDouble B)
         throw unexpected_shape("Expected A and B to have the same number of rows but they do not.");
 # endif // PARALLEL
     }
-#endif // CHECKMATSHAPE
+#endif // CHECKSHAPE
 
     int n = A.ncols();              // Beyond this line, n is the number of columns for A (and rows for A and B)
 
@@ -196,14 +242,14 @@ MatDouble solve::gaussJ_backsub(MatDouble A, MatDouble B)
     return B;
 }
 
-MatDouble inverse::gaussJ(MatDouble A)
+MatDouble linalg::inverse::gaussJ(MatDouble A)
 {
-#ifdef CHECKMATSHAPE
+#ifdef CHECKSHAPE
     if (A.ncols() != A.nrows())
     {
         throw unexpected_shape("Expected a square matrix, but did not.");
     }
-#endif // CHECKMATSHAPE
+#endif // CHECKSHAPE
 
     // Make the identity matrix
     MatDouble identity(A.ncols(), A.nrows(), 0.0);
@@ -212,5 +258,11 @@ MatDouble inverse::gaussJ(MatDouble A)
         identity[i][i] = 1.0;
     }
     
-    return solve::gaussJ_backsub(A,identity);
+    return linalg::solve::gaussJ_backsub(A,identity);
 }
+
+
+
+// Template instantiations
+// template MatInt matmul(MatInt, MatInt);
+// template MatDouble matmul(MatDouble, MatDouble);

@@ -4,8 +4,8 @@
 /* Compile-time options: */
 
 #define CHECKBOUNDS
-#define CHECKMATSHAPE
-#define PARALLEL        // Turn of or off according to your needs
+#define CHECKSHAPE
+// #define PARALLEL        // Turn of or off according to your needs
 
 #ifdef PARALLEL
 #include <mpi.h>
@@ -20,11 +20,13 @@
 #include <assert.h>
 #include <iomanip>
 #include <chrono>
+#include <random>
 
 using std::swap;
 
 /* Global Constants */
 const unsigned int OUTPRECISION = 16;       // precision used to output matrix / vector values to stream
+
 const int INDEX_OUT_OF_BOUNDS = 1;
 const int UNSOLVABLE = 2;
 const int UNEXPECTED_SHAPE = 3; 
